@@ -23,5 +23,13 @@ pipeline {
                 sh "mvn package"
             }
         }
+	 
+       stage('Consolidate Results') {
+            steps {
+            	input("Do you want to capture results?")
+                junit '**/target/surefire-reports/TEST-*.xml'
+        	archiveArtifacts 'target/*.jar'
+            }
+        }
     }
 }
