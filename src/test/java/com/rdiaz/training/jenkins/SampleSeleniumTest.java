@@ -1,7 +1,7 @@
 package com.rdiaz.training.jenkins;
 
-import java.time.Duration;
 import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -27,8 +27,12 @@ public class SampleSeleniumTest {
                 "--window-size=1920,1040",
                 "--no-sandbox",
                 "--disable-gpu",
-                "--allow-running-insecure-content"
+                "--allow-running-insecure-content",
+                "--incognito",
+                "--disable-infobars"
         ));
+        
+        chromeOptions.setExperimentalOption("excludeSwitches",Arrays.asList("disable-popup-blocking", "enable-automation"));
 		driver = new ChromeDriver(chromeOptions);
 	}
 
@@ -36,27 +40,29 @@ public class SampleSeleniumTest {
 	public void validateGoogleId() throws Exception {
 		System.out.println("Opening Browser");
 		driver.get("https://www.google.com");
-		this.bypassCaptcha();
-
+		
 		System.out.println("Clicking Gmail Link");
 		driver.findElement(By.xpath("//*[@id=\"gb\"]/div/div[1]/div/div[1]/a")).click();
-
-		this.bypassCaptcha();
+				
 		System.out.println("Entering username");
 		driver.findElement(By.xpath("//*[@id=\"identifierId\"]")).sendKeys("rolandoworks@gmail.com");
 
-		this.bypassCaptcha();
 		System.out.println("Clicking Next button");
 		driver.findElement(By.xpath("//*[@id=\"identifierNext\"]")).click();
-
-		this.bypassCaptcha();
+		
+		bypassCaptcha();
 		boolean textFound = driver.getPageSource().contains("This browser or app may not be secure");
 		AssertJUnit.assertTrue(textFound);
 	}
 
 	private void bypassCaptcha() {
-		driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(2));
+		try {
+			TimeUnit.SECONDS.sleep(3);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
+	
 	@AfterClass
 	public void closeBrowser() {
 		driver.quit();
