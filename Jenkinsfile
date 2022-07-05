@@ -11,18 +11,17 @@ pipeline {
                 sh "mvn clean"
             }
        }
-
-       stage("Parallel Execution") {
-          steps {
-            parallel(
-            	p1: {
-            	   sh "mvn test"
-            	  },
-            	p2: {
-                   sh "mvn package"
-            	  }
-            	)
-          }
+       
+       stage('Test Stage') {
+            steps {
+                sh "mvn test"
+            }
+       }
+       
+       stage('Package Stage') {
+            steps {
+                sh "mvn package"
+            }
        }
 
        stage('SonarQube analysis Stage') {
